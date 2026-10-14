@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/icon.png" alt="Noctuary icon" width="128">
+</p>
+
 # Noctuary
 
 A dream journal for Android that keeps everything on your phone and turns a
@@ -8,6 +12,16 @@ spirit (open it, write your dream, done), with a retrofuturist face and
 statistics built for lucid-dreaming practice.
 
 **Kotlin · Jetpack Compose · Room · GPL-3.0-or-later · no network permission**
+
+## Screenshots
+
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Journal" width="250">
+  &nbsp;
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Patterns" width="250">
+  &nbsp;
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Settings" width="250">
+</p>
 
 ---
 
@@ -58,7 +72,7 @@ statistics built for lucid-dreaming practice.
 ## Build
 
 ```bash
-git clone <your fork>
+git clone https://github.com/AgentGit007/noctuary.git
 cd noctuary
 ./gradlew assembleDebug
 # → app/build/outputs/apk/debug/app-debug.apk
@@ -67,11 +81,6 @@ cd noctuary
 Requirements: JDK 17, Android SDK 35. Opening the folder in Android Studio
 (Ladybug or newer) also works — everything is declared in
 `gradle/libs.versions.toml`.
-
-> This project was assembled without running a build (no Android SDK on the
-> machine it was written on), so expect to fix a small number of mechanical
-> compile errors on first sync — an import or a renamed Compose parameter. The
-> structure, logic and resources are complete.
 
 ### Before you release
 
