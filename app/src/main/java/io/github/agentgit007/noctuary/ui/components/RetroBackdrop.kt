@@ -15,6 +15,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -83,8 +84,8 @@ fun RetroBackdrop(
             drawRect(
                 brush = Brush.verticalGradient(
                     0f to palette.background,
-                    0.45f to palette.haze,
-                    0.56f to palette.haze,
+                    0.45f to accents.haze,
+                    0.56f to accents.haze,
                     1f to palette.background,
                 )
             )
@@ -118,7 +119,7 @@ fun RetroBackdrop(
                 var band = 0
                 while (y < sunCenter.y + sunRadius) {
                     drawRect(
-                        color = palette.haze.copy(alpha = 0.85f),
+                        color = accents.haze.copy(alpha = 0.85f),
                         topLeft = Offset(sunCenter.x - sunRadius, y),
                         size = Size(sunRadius * 2f, (2 + band).dp.toPx() * 0.7f),
                     )

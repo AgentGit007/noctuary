@@ -5,11 +5,10 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- crescent: outer disc minus offset disc (evenOdd) -->
+    <!-- crescent moon -->
     <path
         android:fillColor="#D9C6FF"
-        android:fillType="evenOdd"
-        android:pathData="M38,46 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 M31,40 a17,17 0 1,0 34,0 a17,17 0 1,0 -34,0" />
+        android:pathData="M53.34,23.01 A21,21 0 1 0 74.18,49.81 A17,17 0 1 1 53.34,23.01 Z" />
 
     <!-- retro horizon -->
     <path
