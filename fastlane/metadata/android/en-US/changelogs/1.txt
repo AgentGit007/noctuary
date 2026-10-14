@@ -1,0 +1,7 @@
+First release.
+
+* Dream entries with a freely chosen date, mood, clarity and markers
+* Tags, search and filters
+* Interactive statistics: recall calendar, trends, weekdays, months, themes, dream signs
+* JSON / Markdown / CSV export, JSON import with merge or replace
+* Three pastel palettes, light and dark

@@ -1,0 +1,15 @@
+Noctuary is an offline dream journal. Write down what you remember before it fades, then watch the patterns surface.
+
+It holds no account, asks for no permissions and declares no internet access at all — the app is technically incapable of sending your dreams anywhere.
+
+Features
+
+* Record a dream in seconds: a title you can skip, a body, and done.
+* Choose the night. The date of a dream is yours to set, both when adding and when editing, so a backlog of scribbled notes can be entered properly.
+* Mark entries as lucid, nightmare, recurring or favourite, and rate mood and clarity on a five-point scale.
+* Tag freely, then filter and search the journal by tag, marker or text.
+* Statistics that are worth opening: a year-long recall calendar you can tap, a scrubable mood and clarity trend, weekday and month breakdowns, a lucid-rate dial, theme rankings and "dream signs" — the words that keep returning across different nights, which is exactly what lucid-dreaming practice asks you to notice.
+* Export the whole journal as JSON (a complete, restorable backup), or as Markdown or CSV for reading elsewhere. Import merges or replaces, and tries its best to read exports from other dream journals too.
+* Three pastel palettes over a synthwave horizon, in light and dark, with the CRT scanlines switchable.
+
+Free software under the GNU GPL v3 or later.
