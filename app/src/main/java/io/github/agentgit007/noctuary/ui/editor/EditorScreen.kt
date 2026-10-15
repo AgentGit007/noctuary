@@ -8,7 +8,9 @@
 package io.github.agentgit007.noctuary.ui.editor
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +45,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -144,8 +147,15 @@ fun EditorScreen(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(accents.lilac.copy(alpha = 0.14f))
+                            .then(
+                                if (palette.poster) {
+                                    Modifier.border(2.dp, palette.ink)
+                                } else {
+                                    Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(accents.lilac.copy(alpha = 0.14f))
+                                }
+                            )
                             .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -174,7 +184,10 @@ fun EditorScreen(
                             accent = accents.lilac,
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                         val today = LocalDate.now()
                         listOf(
                             "LAST NIGHT" to today,
@@ -271,7 +284,7 @@ fun EditorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("flying, water, childhood home…") },
                 singleLine = true,
-                shape = RoundedCornerShape(50),
+                shape = if (palette.poster) MaterialTheme.shapes.small else RoundedCornerShape(50),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     tagInput.split(',').forEach(vm::addTagToDraft)
@@ -409,24 +422,44 @@ private fun ScaleSelector(
         ) {
             (1..5).forEach { step ->
                 val selected = step <= value
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .height(38.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            if (selected) accent.copy(alpha = 0.18f + 0.1f * step)
-                            else palette.surface.copy(alpha = 0.5f)
+                if (palette.poster) {
+                    // Indicator lamps: lit up to the chosen value.
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(38.dp)
+                            .background(if (selected) palette.fillFor(accent) else palette.surface)
+                            .border(if (step == value) 3.dp else 2.dp, palette.ink)
+                            .clickable { onSelect(step) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = step.toString(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (selected) palette.onFill else palette.onBackground,
+                            textAlign = TextAlign.Center,
                         )
-                        .clickable { onSelect(step) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = step.toString(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (step == value) accent else palette.onSurfaceMuted,
-                        textAlign = TextAlign.Center,
-                    )
+                    }
+                } else {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(
+                                if (selected) accent.copy(alpha = 0.18f + 0.1f * step)
+                                else palette.surface.copy(alpha = 0.5f)
+                            )
+                            .clickable { onSelect(step) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = step.toString(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (step == value) accent else palette.onSurfaceMuted,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
             }
         }
@@ -438,13 +471,26 @@ private fun fieldColors(
     focused: Color,
     unfocused: Color,
     container: Color,
-) = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = focused,
-    unfocusedBorderColor = unfocused,
-    focusedContainerColor = container.copy(alpha = 0.72f),
-    unfocusedContainerColor = container.copy(alpha = 0.55f),
-    cursorColor = focused,
-)
+): TextFieldColors {
+    val palette = LocalPaletteColors.current
+    return if (palette.poster) {
+        OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = palette.ink,
+            unfocusedBorderColor = palette.ink,
+            focusedContainerColor = palette.surface,
+            unfocusedContainerColor = palette.surface,
+            cursorColor = palette.ink,
+        )
+    } else {
+        OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = focused,
+            unfocusedBorderColor = unfocused,
+            focusedContainerColor = container.copy(alpha = 0.72f),
+            unfocusedContainerColor = container.copy(alpha = 0.55f),
+            cursorColor = focused,
+        )
+    }
+}
 
 private fun relativeLabel(date: LocalDate): String {
     val days = LocalDate.now().toEpochDay() - date.toEpochDay()

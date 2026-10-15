@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.agentgit007.noctuary.ui.theme.LocalAccents
 import io.github.agentgit007.noctuary.ui.theme.LocalIsNight
@@ -42,10 +43,21 @@ fun RetroBackdrop(
     modifier: Modifier = Modifier,
     scanlines: Boolean = true,
     intensity: Float = 1f,
+    skylineLift: Dp = 0.dp,
 ) {
     val accents = LocalAccents.current
     val palette = LocalPaletteColors.current
     val night = LocalIsNight.current
+
+    if (palette.poster) {
+        KosmosBackdrop(
+            modifier = modifier,
+            ruled = scanlines,
+            intensity = intensity,
+            skylineLift = skylineLift,
+        )
+        return
+    }
 
     val transition = rememberInfiniteTransition(label = "backdrop")
     val drift by transition.animateFloat(

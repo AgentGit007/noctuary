@@ -167,7 +167,12 @@ fun StatsScreen(
                     val day = selectedDay
                     if (day == null) {
                         Text(
-                            text = "A year of nights. Tap any square to see what you wrote.",
+                            text = if (palette.poster) {
+                                "A year of nights as a housing block: a lit window is a night " +
+                                    "you remembered. Tap one to see what you wrote."
+                            } else {
+                                "A year of nights. Tap any square to see what you wrote."
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = palette.onSurfaceMuted,
                         )

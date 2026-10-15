@@ -10,6 +10,6 @@ Features
 * Tag freely, then filter and search the journal by tag, marker or text.
 * Statistics that are worth opening: a year-long recall calendar you can tap, a scrubable mood and clarity trend, weekday and month breakdowns, a lucid-rate dial, theme rankings and "dream signs" — the words that keep returning across different nights, which is exactly what lucid-dreaming practice asks you to notice.
 * Export the whole journal as JSON (a complete, restorable backup), or as Markdown or CSV for reading elsewhere. Import merges or replaces, and tries its best to read exports from other dream journals too.
-* Three pastel palettes over a synthwave horizon, in light and dark, with the CRT scanlines switchable.
+* Three pastel palettes over a synthwave horizon, plus Kosmos: a retrofuturist poster look on paper, with ticket-stub entries, a housing-block recall calendar and a cockpit gauge. All in light and dark.
 
 Free software under the GNU GPL v3 or later.

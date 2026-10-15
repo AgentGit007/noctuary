@@ -1,23 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kosmos launcher icon: crescent planet with an orbit and satellite over a
+     prefab skyline and a striped poster sun. Generated geometry, 108dp grid. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- crescent moon -->
+    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.8" android:scaleY="0.8">
     <path
-        android:fillColor="#D9C6FF"
-        android:pathData="M53.34,23.01 A21,21 0 1 0 74.18,49.81 A17,17 0 1 1 53.34,23.01 Z" />
-
-    <!-- retro horizon -->
+        android:pathData="M29.10,22.00 a0.9,0.9 0 1 0 1.80,0 a0.9,0.9 0 1 0 -1.80,0 Z"
+        android:fillColor="#E8E2D0"
+        android:fillAlpha="0.7" />
     <path
-        android:fillColor="#9BF0E1"
-        android:pathData="M26,74 H82 V77 H26 Z" />
+        android:pathData="M77.10,20.00 a0.9,0.9 0 1 0 1.80,0 a0.9,0.9 0 1 0 -1.80,0 Z"
+        android:fillColor="#E8E2D0"
+        android:fillAlpha="0.7" />
     <path
-        android:fillColor="#FFC2D1"
-        android:pathData="M32,82 H76 V85 H32 Z" />
+        android:pathData="M83.10,40.00 a0.9,0.9 0 1 0 1.80,0 a0.9,0.9 0 1 0 -1.80,0 Z"
+        android:fillColor="#E8E2D0"
+        android:fillAlpha="0.7" />
     <path
-        android:fillColor="#FFE2A8"
-        android:pathData="M39,90 H69 V93 H39 Z" />
+        android:pathData="M22.10,44.00 a0.9,0.9 0 1 0 1.80,0 a0.9,0.9 0 1 0 -1.80,0 Z"
+        android:fillColor="#E8E2D0"
+        android:fillAlpha="0.7" />
+    <path
+        android:pathData="M71.10,50.00 a0.9,0.9 0 1 0 1.80,0 a0.9,0.9 0 1 0 -1.80,0 Z"
+        android:fillColor="#E8E2D0"
+        android:fillAlpha="0.7" />
+    <group>
+        <clip-path android:pathData="M0,0H108V86H0Z" />
+        <path
+            android:pathData="M37.00,77.00 a17,17 0 1 0 34.00,0 a17,17 0 1 0 -34.00,0 Z"
+            android:fillColor="#EBA3A0" />
+    </group>
+    <path
+        android:pathData="M30,79.5h48v1.8h-48z"
+        android:fillColor="#14262E" />
+    <path
+        android:pathData="M30,83.0h48v1.8h-48z"
+        android:fillColor="#14262E" />
+    <path
+        android:pathData="M27,62h15V86H27z"
+        android:fillColor="#2A4856" />
+    <path
+        android:pathData="M45,75h18V86H45z"
+        android:fillColor="#1F3A46" />
+    <path
+        android:pathData="M66,58h15V86H66z"
+        android:fillColor="#2A4856" />
+    <path
+        android:pathData="M29.0,74.9h2.4v3h-2.4zM33.4,69.7h2.4v3h-2.4zM33.4,74.9h2.4v3h-2.4zM33.4,80.1h2.4v3h-2.4zM47.0,77.5h2.4v3h-2.4zM55.8,77.5h2.4v3h-2.4zM72.4,60.5h2.4v3h-2.4zM72.4,65.7h2.4v3h-2.4zM72.4,70.9h2.4v3h-2.4zM72.4,76.1h2.4v3h-2.4z"
+        android:fillColor="#0B171C"
+        android:fillAlpha="0.8" />
+    <path
+        android:pathData="M29.0,64.5h2.4v3h-2.4zM29.0,69.7h2.4v3h-2.4zM29.0,80.1h2.4v3h-2.4zM33.4,64.5h2.4v3h-2.4zM51.4,77.5h2.4v3h-2.4zM68.0,60.5h2.4v3h-2.4zM68.0,65.7h2.4v3h-2.4zM68.0,70.9h2.4v3h-2.4zM68.0,76.1h2.4v3h-2.4z"
+        android:fillColor="#F0D48A" />
+    <path
+        android:pathData="M20,86h68v2.6h-68z"
+        android:fillColor="#E8E2D0" />
+    <path
+        android:pathData="M26.32,43.34 A27,7.5 -18 0 1 77.68,26.66"
+        android:strokeColor="#E8E2D0"
+        android:strokeWidth="1.6"
+        android:strokeAlpha="0.85" />
+    <path
+        android:pathData="M51.32,19.01 A16.0,16.0 0 1 0 67.37,39.45 A13.0,13.0 0 1 1 51.32,19.01 Z"
+        android:fillColor="#A8D5C2" />
+    <path
+        android:pathData="M77.68,26.66 A27,7.5 -18 0 1 26.32,43.34"
+        android:strokeColor="#E8E2D0"
+        android:strokeWidth="1.6" />
+    <path
+        android:pathData="M73.25,30.45 a3,3 0 1 0 6.00,0 a3,3 0 1 0 -6.00,0 Z"
+        android:fillColor="#EBA3A0" />
+    <path
+        android:pathData="M73.25,30.45 a3,3 0 1 0 6.00,0 a3,3 0 1 0 -6.00,0 Z"
+        android:strokeColor="#E8E2D0"
+        android:strokeWidth="1.2" />
+    </group>
 </vector>

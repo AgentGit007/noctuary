@@ -7,6 +7,7 @@ package io.github.agentgit007.noctuary.ui.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -124,7 +126,10 @@ fun SettingsScreen(
                             style = MaterialTheme.typography.labelSmall,
                             color = palette.onSurfaceMuted,
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            Modifier.horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
                             Palette.entries.forEach { p ->
                                 Pill(
                                     text = p.name,
@@ -143,12 +148,16 @@ fun SettingsScreen(
                     ) {
                         Column(Modifier.weight(1f)) {
                             Text(
-                                "Scanlines",
+                                if (palette.poster) "Ruled paper" else "Scanlines",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = palette.onBackground,
                             )
                             Text(
-                                "CRT texture over the horizon.",
+                                if (palette.poster) {
+                                    "Faint exercise-book lines behind the page."
+                                } else {
+                                    "CRT texture over the horizon."
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = palette.onSurfaceMuted,
                             )
@@ -156,11 +165,22 @@ fun SettingsScreen(
                         Switch(
                             checked = settings.scanlines,
                             onCheckedChange = vm::setScanlines,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = palette.background,
-                                checkedTrackColor = accents.mint,
-                                uncheckedTrackColor = palette.surfaceHigh,
-                            ),
+                            colors = if (palette.poster) {
+                                SwitchDefaults.colors(
+                                    checkedThumbColor = palette.surface,
+                                    checkedTrackColor = palette.ink,
+                                    checkedBorderColor = palette.ink,
+                                    uncheckedThumbColor = palette.ink,
+                                    uncheckedTrackColor = palette.surface,
+                                    uncheckedBorderColor = palette.ink,
+                                )
+                            } else {
+                                SwitchDefaults.colors(
+                                    checkedThumbColor = palette.background,
+                                    checkedTrackColor = accents.mint,
+                                    uncheckedTrackColor = palette.surfaceHigh,
+                                )
+                            },
                         )
                     }
                 }
@@ -251,6 +271,12 @@ fun SettingsScreen(
                     )
                     Text(
                         text = "Inspired by Midnight by misterwaztaken (GPL-3.0).",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = palette.onSurfaceMuted,
+                    )
+                    Text(
+                        text = "Kosmos headlines are set in Oswald © The Oswald Project Authors, " +
+                            "SIL Open Font License 1.1.",
                         style = MaterialTheme.typography.labelSmall,
                         color = palette.onSurfaceMuted,
                     )

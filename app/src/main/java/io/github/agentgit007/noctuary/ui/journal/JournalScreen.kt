@@ -42,7 +42,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -50,6 +59,7 @@ import io.github.agentgit007.noctuary.NoctuaryViewModel
 import io.github.agentgit007.noctuary.data.Dream
 import io.github.agentgit007.noctuary.data.date
 import io.github.agentgit007.noctuary.data.displayTitle
+import io.github.agentgit007.noctuary.ui.components.DashedRule
 import io.github.agentgit007.noctuary.ui.components.EmptyState
 import io.github.agentgit007.noctuary.ui.components.GlassCard
 import io.github.agentgit007.noctuary.ui.components.Pill
@@ -88,21 +98,38 @@ fun JournalScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = "NOCTUARY",
-                    style = MaterialTheme.typography.displaySmall,
-                    color = palette.onBackground,
-                )
-                Text(
-                    text = if (total == 0) {
-                        "the night archive"
-                    } else {
-                        "$total ${if (total == 1) "dream" else "dreams"} archived"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    color = accents.mint,
-                )
+            Box(Modifier.fillMaxWidth()) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = "NOCTUARY",
+                        style = MaterialTheme.typography.displaySmall,
+                        color = palette.onBackground,
+                    )
+                    Text(
+                        text = if (total == 0) {
+                            "the night archive"
+                        } else {
+                            "$total ${if (total == 1) "dream" else "dreams"} archived"
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = accents.mint,
+                    )
+                }
+                if (palette.poster && total > 0) {
+                    // Rubber stamp: "СОН № n" — "dream no. n".
+                    Text(
+                        text = "СОН № $total",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = accents.blossom,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 10.dp, end = 6.dp)
+                            .rotate(-6f)
+                            .border(2.dp, accents.blossom)
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                            .clearAndSetSemantics { contentDescription = "Dream number $total" },
+                    )
+                }
             }
         }
 
@@ -118,17 +145,32 @@ fun JournalScreen(
                     )
                 },
                 leadingIcon = {
-                    Icon(Icons.Outlined.Search, contentDescription = null, tint = accents.lilac)
+                    Icon(
+                        Icons.Outlined.Search,
+                        contentDescription = null,
+                        tint = if (palette.poster) palette.ink else accents.lilac,
+                    )
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(50),
+                shape = if (palette.poster) RectangleShape else RoundedCornerShape(50),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = accents.lilac,
-                    unfocusedBorderColor = palette.outline,
-                    focusedContainerColor = palette.surface.copy(alpha = 0.7f),
-                    unfocusedContainerColor = palette.surface.copy(alpha = 0.55f),
-                ),
+                colors = if (palette.poster) {
+                    OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = palette.ink,
+                        unfocusedBorderColor = palette.ink,
+                        focusedContainerColor = palette.surface,
+                        unfocusedContainerColor = palette.surface,
+                        focusedLeadingIconColor = palette.ink,
+                        unfocusedLeadingIconColor = palette.ink,
+                    )
+                } else {
+                    OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = accents.lilac,
+                        unfocusedBorderColor = palette.outline,
+                        focusedContainerColor = palette.surface.copy(alpha = 0.7f),
+                        unfocusedContainerColor = palette.surface.copy(alpha = 0.55f),
+                    )
+                },
             )
         }
 
@@ -212,14 +254,18 @@ fun JournalScreen(
                     Text(
                         text = month.format(MONTH_HEADER).uppercase(Locale.getDefault()),
                         style = MaterialTheme.typography.titleSmall,
-                        color = accents.lilac,
+                        color = if (palette.poster) palette.onBackground else accents.lilac,
                     )
-                    Box(
-                        Modifier
-                            .weight(1f)
-                            .height(1.dp)
-                            .background(palette.outline.copy(alpha = 0.6f))
-                    )
+                    if (palette.poster) {
+                        DashedRule(palette.ink.copy(alpha = 0.4f), Modifier.weight(1f))
+                    } else {
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .height(1.dp)
+                                .background(palette.outline.copy(alpha = 0.6f))
+                        )
+                    }
                     Text(
                         text = entries.size.toString(),
                         style = MaterialTheme.typography.labelSmall,
@@ -253,6 +299,11 @@ private fun DreamCard(
         dream.lucid -> accents.mint
         dream.recurring -> accents.sky
         else -> accents.lilac
+    }
+
+    if (palette.poster) {
+        TicketCard(dream, accent, onClick, onToggleFavorite, onTagClick)
+        return
     }
 
     GlassCard(modifier = Modifier.fillMaxWidth(), accent = accent, onClick = onClick) {
@@ -363,6 +414,158 @@ private fun MoodDots(mood: Int, accent: Color) {
                     .clip(RoundedCornerShape(50))
                     .background(
                         if (i < mood) accent else palette.outline.copy(alpha = 0.7f)
+                    )
+            )
+        }
+    }
+}
+
+/**
+ * Kosmos dream card: a tram-ticket stub. The coloured stub carries the date
+ * and is torn off along a dashed perforation; the body sits on paper.
+ * The stub is painted behind the row (rather than measured) so the card
+ * keeps working with the lazy tag row inside it.
+ */
+@Composable
+private fun TicketCard(
+    dream: Dream,
+    accent: Color,
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    onTagClick: (String) -> Unit,
+) {
+    val accents = LocalAccents.current
+    val palette = LocalPaletteColors.current
+    val stubWidth = 60.dp
+    val stubFill = palette.fillFor(accent)
+    val perforation = palette.ink
+
+    GlassCard(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        Row(
+            Modifier.drawBehind {
+                val sw = stubWidth.toPx()
+                drawRect(stubFill, size = Size(sw, size.height))
+                val t = 2.dp.toPx()
+                drawLine(
+                    color = perforation,
+                    start = Offset(sw - t / 2, 0f),
+                    end = Offset(sw - t / 2, size.height),
+                    strokeWidth = t,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(t * 2.5f, t * 2f)),
+                )
+            },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                Modifier
+                    .width(stubWidth)
+                    .padding(vertical = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = dream.date.dayOfMonth.toString().padStart(2, '0'),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = palette.onFill,
+                )
+                Text(
+                    text = dream.date.format(WEEKDAY).uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = palette.onFill,
+                )
+            }
+
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp, top = 10.dp, bottom = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = dream.displayTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = palette.onBackground,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (dream.body.isNotBlank()) {
+                    Text(
+                        text = dream.body.trim(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = palette.onSurfaceMuted,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (dream.lucid) PosterMarker("LUCID", accents.mint)
+                    if (dream.nightmare) PosterMarker("NIGHTMARE", accents.blossom)
+                    if (dream.recurring) PosterMarker("RECURRING", accents.sky)
+                    Spacer(Modifier.weight(1f))
+                    MoodLamps(dream.mood, accent)
+                }
+                if (dream.tags.isNotEmpty()) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(dream.tags, key = { it }) { tag ->
+                            Text(
+                                text = "#$tag",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = accents.sky,
+                                modifier = Modifier
+                                    .clickable { onTagClick(tag) }
+                                    .padding(vertical = 3.dp),
+                            )
+                        }
+                    }
+                }
+            }
+
+            IconButton(onClick = onToggleFavorite) {
+                Icon(
+                    imageVector = if (dream.favorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = if (dream.favorite) "Remove from favourites" else "Add to favourites",
+                    tint = if (dream.favorite) accents.amber else palette.onSurfaceMuted,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PosterMarker(text: String, color: Color) {
+    val palette = LocalPaletteColors.current
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        color = palette.onFill,
+        modifier = Modifier
+            .background(palette.fillFor(color))
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+    )
+}
+
+/** Mood as five square indicator lamps, lit from the left. */
+@Composable
+private fun MoodLamps(mood: Int, accent: Color) {
+    val palette = LocalPaletteColors.current
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
+        modifier = Modifier.semantics(mergeDescendants = true) {
+            contentDescription = "Mood $mood of 5"
+        },
+    ) {
+        repeat(5) { i ->
+            Box(
+                Modifier
+                    .size(7.dp)
+                    .then(
+                        if (i < mood) {
+                            Modifier.background(accent)
+                        } else {
+                            Modifier.border(1.5.dp, palette.ink)
+                        }
                     )
             )
         }

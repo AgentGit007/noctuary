@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 enum class ThemeMode { SYSTEM, NIGHT, DAY }
 
 /** Named pastel palettes. Order is stable — it is persisted by name. */
-enum class Palette { AURORA, SUNSET, CASSETTE }
+enum class Palette { AURORA, SUNSET, CASSETTE, KOSMOS }
 
 data class Settings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,

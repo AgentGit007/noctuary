@@ -41,7 +41,43 @@ data class PaletteColors(
     val primary: Color,
     val onPrimary: Color,
     val accents: Accents,
-)
+    /**
+     * Poster palettes (Kosmos) swap the glass-and-glow look for printed
+     * paper: opaque cards, thick [ink] outlines, hard offset shadows and
+     * pastel fills with dark text. Components branch on this flag.
+     */
+    val poster: Boolean = false,
+    /** Outline / rule colour for poster palettes. */
+    val ink: Color = outline,
+    /** Hard offset shadow under poster cards. */
+    val shadow: Color = Color.Transparent,
+    /** Text on an [ink]-filled surface (the active nav cell). */
+    val onInk: Color = background,
+    /** Pastel fill per accent; null means "tint the accent". */
+    val fills: Accents? = null,
+    /** Text colour on a pastel fill. */
+    val onFill: Color = onBackground,
+) {
+    /**
+     * Background for something tagged with [accent]. Glass palettes tint the
+     * accent itself; poster palettes look up the matching flat pastel, so
+     * text on it can stay dark ink and remain readable.
+     */
+    fun fillFor(accent: Color, glassAlpha: Float = 0.18f): Color {
+        val f = fills ?: return accent.copy(alpha = glassAlpha)
+        return when (accent) {
+            accents.mint -> f.mint
+            accents.lilac -> f.lilac
+            accents.blossom -> f.blossom
+            accents.amber -> f.amber
+            accents.sky -> f.sky
+            else -> accent.copy(alpha = 0.3f)
+        }
+    }
+
+    /** Text colour to use on top of [fillFor]. */
+    fun onFillFor(accent: Color): Color = if (fills != null) onFill else accent
+}
 
 // ---------------------------------------------------------------- AURORA ----
 
@@ -179,4 +215,74 @@ val CassetteDay = PaletteColors(
         sunBottom = Color(0xFFE0736C),
         haze = Color(0xFFD8ECE4),
     ),
+)
+
+// ---------------------------------------------------------------- KOSMOS ----
+//
+// Retrofuturist, post-soviet, pastel: the paper and inks of 1960s space-race
+// posters, Plattenbau facades and tram tickets. No political symbols, just
+// the graphic vocabulary. Accents double as text colours, so on paper they
+// are the deep inks (all ≥ 4.5:1 on the background, WCAG AA) and the pastels
+// live in [PaletteColors.fills]; at dusk the pastels are light enough to be
+// both.
+
+private val KosmosPastels = Accents(
+    mint = Color(0xFFA8D5C2),
+    lilac = Color(0xFFC9BEE6),
+    blossom = Color(0xFFEBA3A0),
+    amber = Color(0xFFF0D48A),
+    sky = Color(0xFFA9C7DD),
+    horizon = Color(0xFFA59F91),
+    sunTop = Color(0xFFEBA3A0),
+    sunBottom = Color(0xFFEBA3A0),
+    haze = Color(0xFFECE6D6),
+)
+
+val KosmosDay = PaletteColors(
+    background = Color(0xFFECE6D6),
+    surface = Color(0xFFF7F2E4),
+    surfaceHigh = Color(0xFFC9C3B3),
+    onBackground = Color(0xFF20343F),
+    onSurfaceMuted = Color(0xFF56666A),
+    outline = Color(0xFFBDB8AB),
+    primary = Color(0xFF2F5878),
+    onPrimary = Color(0xFFF7F2E4),
+    accents = Accents(
+        mint = Color(0xFF2F6B5A),
+        lilac = Color(0xFF5B4E8C),
+        blossom = Color(0xFF8F3A36),
+        amber = Color(0xFF7A560C),
+        sky = Color(0xFF2F5878),
+        horizon = Color(0xFFA59F91),
+        sunTop = Color(0xFFEBA3A0),
+        sunBottom = Color(0xFFEBA3A0),
+        haze = Color(0xFFECE6D6),
+    ),
+    poster = true,
+    ink = Color(0xFF20343F),
+    shadow = Color(0xFFBDB8AB),
+    onInk = Color(0xFFA8D5C2),
+    fills = KosmosPastels,
+    onFill = Color(0xFF20343F),
+)
+
+val KosmosNight = PaletteColors(
+    background = Color(0xFF14262E),
+    surface = Color(0xFF1D3540),
+    surfaceHigh = Color(0xFF0F1D23),
+    onBackground = Color(0xFFE8E2D0),
+    onSurfaceMuted = Color(0xFF9DB0B0),
+    outline = Color(0xFF2A4856),
+    primary = Color(0xFFA8D5C2),
+    onPrimary = Color(0xFF14262E),
+    accents = KosmosPastels.copy(
+        horizon = Color(0xFF2A4856),
+        haze = Color(0xFF14262E),
+    ),
+    poster = true,
+    ink = Color(0xFFE8E2D0),
+    shadow = Color(0xFF0B171C),
+    onInk = Color(0xFF14262E),
+    fills = KosmosPastels,
+    onFill = Color(0xFF14262E),
 )

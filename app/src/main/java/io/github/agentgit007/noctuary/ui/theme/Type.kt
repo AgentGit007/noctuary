@@ -9,16 +9,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.agentgit007.noctuary.R
 
 /**
- * No fonts are bundled: the retro-terminal register comes from the platform
- * monospace family with wide tracking, so the APK stays small and no font
- * licence has to travel with the app. Drop an OFL face into
- * `res/font/` and swap [Display] here if you want a true display face.
+ * The glass palettes use only platform fonts: the retro-terminal register
+ * comes from the monospace family with wide tracking. The Kosmos palette adds
+ * one bundled face, Oswald (SIL Open Font License 1.1, see
+ * LICENSE-OSWALD-OFL.txt; the licence and copyright also sit in the font
+ * files' name tables), for its condensed poster headlines. Oswald covers
+ * Latin and Cyrillic.
  */
 private val Display = FontFamily.Monospace
 private val Body = FontFamily.SansSerif
@@ -97,4 +101,52 @@ val NoctuaryShapes = Shapes(
     medium = RoundedCornerShape(18.dp),
     large = RoundedCornerShape(24.dp),
     extraLarge = RoundedCornerShape(32.dp),
+)
+
+// ------------------------------------------------------------- KOSMOS ----
+
+private val Poster = FontFamily(
+    Font(R.font.oswald_medium, FontWeight.Medium),
+    Font(R.font.oswald_semibold, FontWeight.SemiBold),
+)
+
+/** Condensed poster headlines over the same mono labels and sans body. */
+val KosmosTypography = NoctuaryTypography.copy(
+    displaySmall = TextStyle(
+        fontFamily = Poster,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 40.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 4.sp,
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = Poster,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 1.sp,
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = Poster,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
+        lineHeight = 26.sp,
+        letterSpacing = 1.sp,
+    ),
+    titleSmall = TextStyle(
+        fontFamily = Poster,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 3.sp,
+    ),
+)
+
+/** Printed matter has square corners. */
+val PosterShapes = Shapes(
+    extraSmall = RoundedCornerShape(0.dp),
+    small = RoundedCornerShape(0.dp),
+    medium = RoundedCornerShape(0.dp),
+    large = RoundedCornerShape(0.dp),
+    extraLarge = RoundedCornerShape(0.dp),
 )

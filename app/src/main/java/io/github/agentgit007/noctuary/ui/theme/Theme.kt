@@ -23,6 +23,15 @@ private fun colorsFor(palette: Palette, night: Boolean): PaletteColors = when (p
     Palette.AURORA -> if (night) AuroraNight else AuroraDay
     Palette.SUNSET -> if (night) SunsetNight else SunsetDay
     Palette.CASSETTE -> if (night) CassetteNight else CassetteDay
+    Palette.KOSMOS -> if (night) KosmosNight else KosmosDay
+}
+
+/** Resolves whether the app is in night mode for a given setting. */
+@Composable
+fun isNight(themeMode: ThemeMode): Boolean = when (themeMode) {
+    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    ThemeMode.NIGHT -> true
+    ThemeMode.DAY -> false
 }
 
 @Composable
@@ -31,11 +40,7 @@ fun NoctuaryTheme(
     palette: Palette = Palette.AURORA,
     content: @Composable () -> Unit,
 ) {
-    val night = when (themeMode) {
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-        ThemeMode.NIGHT -> true
-        ThemeMode.DAY -> false
-    }
+    val night = isNight(themeMode)
     val p = colorsFor(palette, night)
 
     val scheme = if (night) {
@@ -89,8 +94,8 @@ fun NoctuaryTheme(
     ) {
         MaterialTheme(
             colorScheme = scheme,
-            typography = NoctuaryTypography,
-            shapes = NoctuaryShapes,
+            typography = if (p.poster) KosmosTypography else NoctuaryTypography,
+            shapes = if (p.poster) PosterShapes else NoctuaryShapes,
             content = content,
         )
     }

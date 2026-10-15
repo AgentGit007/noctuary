@@ -9,6 +9,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
@@ -40,7 +41,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
@@ -50,7 +53,9 @@ import io.github.agentgit007.noctuary.stats.TrendPoint
 import io.github.agentgit007.noctuary.ui.theme.LocalPaletteColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 private val DAY_LABEL: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
 
@@ -72,9 +77,17 @@ fun RecallHeatmap(
 ) {
     val palette = LocalPaletteColors.current
     val density = LocalDensity.current
-    val cell = 13.dp
-    val gap = 3.dp
-    val step = cell + gap
+    // Poster palettes draw the calendar as a prefab facade: taller-than-wide
+    // windows on a concrete slab, lit when you remembered that night.
+    val poster = palette.poster
+    val cellW = if (poster) 11.dp else 13.dp
+    val cellH = 13.dp
+    val gap = if (poster) 4.dp else 3.dp
+    val stepX = cellW + gap
+    val stepY = cellH + gap
+    val unlit = if (poster) palette.ink.copy(alpha = 0.16f) else palette.outline.copy(alpha = 0.35f)
+    val litLow = if (poster) palette.fillFor(palette.accents.amber) else accent
+    val litHigh = if (poster) palette.fillFor(palette.accents.blossom) else accent
 
     // Align the first column to a Monday so rows mean weekdays.
     val firstMonday = start.minusDays((start.dayOfWeek.value - 1).toLong())
@@ -87,16 +100,28 @@ fun RecallHeatmap(
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(Modifier.fillMaxWidth().horizontalScroll(scroll)) {
-            val stepPx = with(density) { step.toPx() }
-            val cellPx = with(density) { cell.toPx() }
+            val stepXPx = with(density) { stepX.toPx() }
+            val stepYPx = with(density) { stepY.toPx() }
+            val cellWPx = with(density) { cellW.toPx() }
+            val cellHPx = with(density) { cellH.toPx() }
             Canvas(
                 Modifier
-                    .width(step * weeks)
-                    .height(step * 7)
+                    .then(
+                        if (poster) {
+                            Modifier
+                                .background(palette.surfaceHigh)
+                                .border(2.dp, palette.ink)
+                                .padding(start = 6.dp, top = 6.dp, end = 2.dp, bottom = 2.dp)
+                        } else {
+                            Modifier
+                        }
+                    )
+                    .width(stepX * weeks)
+                    .height(stepY * 7)
                     .pointerInput(weeks, heatmap) {
                         detectTapGestures { offset ->
-                            val col = (offset.x / stepPx).toInt()
-                            val row = (offset.y / stepPx).toInt()
+                            val col = (offset.x / stepXPx).toInt()
+                            val row = (offset.y / stepYPx).toInt()
                             if (col in 0 until weeks && row in 0..6) {
                                 val day = firstMonday.plusDays((col * 7 + row).toLong())
                                 if (!day.isAfter(end)) {
@@ -112,23 +137,27 @@ fun RecallHeatmap(
                         if (day.isAfter(end)) continue
                         val count = heatmap[day.toEpochDay()] ?: 0
                         val strength = if (count == 0) 0f else 0.25f + 0.75f * (count.toFloat() / max)
-                        val topLeft = Offset(col * stepPx, row * stepPx)
+                        val topLeft = Offset(col * stepXPx, row * stepYPx)
+                        val corner = androidx.compose.ui.geometry.CornerRadius(
+                            if (poster) 0f else 3.dp.toPx()
+                        )
+                        val fill = when {
+                            count == 0 -> unlit
+                            poster -> lerp(litLow, litHigh, if (max <= 1) 0f else (count - 1f) / (max - 1f))
+                            else -> accent.copy(alpha = strength)
+                        }
                         drawRoundRect(
-                            color = if (count == 0) {
-                                palette.outline.copy(alpha = 0.35f)
-                            } else {
-                                accent.copy(alpha = strength)
-                            },
+                            color = fill,
                             topLeft = topLeft,
-                            size = Size(cellPx, cellPx),
-                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx()),
+                            size = Size(cellWPx, cellHPx),
+                            cornerRadius = corner,
                         )
                         if (day == selectedDay) {
                             drawRoundRect(
-                                color = palette.onBackground,
+                                color = if (poster) palette.ink else palette.onBackground,
                                 topLeft = topLeft,
-                                size = Size(cellPx, cellPx),
-                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx()),
+                                size = Size(cellWPx, cellHPx),
+                                cornerRadius = corner,
                                 style = Stroke(width = 2.dp.toPx()),
                             )
                         }
@@ -159,8 +188,10 @@ fun RecallHeatmap(
                     Box(
                         Modifier
                             .size(9.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(accent.copy(alpha = a))
+                            .clip(RoundedCornerShape(if (poster) 0.dp else 2.dp))
+                            .background(
+                                if (poster) lerp(litLow, litHigh, (a - 0.25f) / 0.75f) else accent.copy(alpha = a)
+                            )
                     )
                 }
                 Text(
@@ -446,6 +477,10 @@ fun RateDial(
         animationSpec = tween(700),
         label = "dial",
     )
+    if (palette.poster) {
+        CockpitGauge(sweep, caption, accent, modifier)
+        return
+    }
     Box(modifier.size(124.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.size(124.dp)) {
             val stroke = 12.dp.toPx()
@@ -482,6 +517,87 @@ fun RateDial(
                 textAlign = TextAlign.Center,
             )
         }
+    }
+}
+
+/**
+ * Kosmos variant of [RateDial]: a half-round instrument gauge with five
+ * ticks and a needle, the figure printed underneath.
+ */
+@Composable
+private fun CockpitGauge(
+    value: Float,
+    caption: String,
+    accent: Color,
+    modifier: Modifier = Modifier,
+) {
+    val palette = LocalPaletteColors.current
+    val needle = palette.accents.blossom
+    val fill = palette.fillFor(accent)
+    Column(modifier.width(124.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Canvas(
+            Modifier
+                .width(124.dp)
+                .height(70.dp)
+        ) {
+            val band = 12.dp.toPx()
+            val r = size.width / 2f - band / 2f
+            val c = Offset(size.width / 2f, size.height - 6.dp.toPx())
+            val box = Size(r * 2, r * 2)
+            val tl = Offset(c.x - r, c.y - r)
+            drawArc(
+                color = palette.ink.copy(alpha = 0.16f),
+                startAngle = 180f,
+                sweepAngle = 180f,
+                useCenter = false,
+                topLeft = tl,
+                size = box,
+                style = Stroke(width = band, cap = StrokeCap.Butt),
+            )
+            drawArc(
+                color = fill,
+                startAngle = 180f,
+                sweepAngle = 180f * value,
+                useCenter = false,
+                topLeft = tl,
+                size = box,
+                style = Stroke(width = band, cap = StrokeCap.Butt),
+            )
+            // ticks at 0, 25, 50, 75, 100 %
+            for (i in 0..4) {
+                val a = Math.toRadians(180.0 + i * 45.0)
+                val outer = r + band / 2f
+                val inner = r - band / 2f - 3.dp.toPx()
+                drawLine(
+                    color = palette.ink,
+                    start = Offset(c.x + (outer * cos(a)).toFloat(), c.y + (outer * sin(a)).toFloat()),
+                    end = Offset(c.x + (inner * cos(a)).toFloat(), c.y + (inner * sin(a)).toFloat()),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
+            val na = Math.toRadians(180.0 + 180.0 * value)
+            val len = r - band / 2f - 6.dp.toPx()
+            drawLine(
+                color = needle,
+                start = c,
+                end = Offset(c.x + (len * cos(na)).toFloat(), c.y + (len * sin(na)).toFloat()),
+                strokeWidth = 3.dp.toPx(),
+                cap = StrokeCap.Round,
+            )
+            drawCircle(palette.fillFor(needle), radius = 6.dp.toPx(), center = c)
+            drawCircle(palette.ink, radius = 6.dp.toPx(), center = c, style = Stroke(2.dp.toPx()))
+        }
+        Text(
+            text = "${(value * 100).roundToInt()}%",
+            style = MaterialTheme.typography.headlineMedium,
+            color = palette.onBackground,
+        )
+        Text(
+            text = caption.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = palette.onSurfaceMuted,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

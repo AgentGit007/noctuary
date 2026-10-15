@@ -24,9 +24,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.agentgit007.noctuary.ui.theme.LocalAccents
 import io.github.agentgit007.noctuary.ui.theme.LocalPaletteColors
@@ -40,6 +50,20 @@ fun GlassCard(
     content: @Composable () -> Unit,
 ) {
     val palette = LocalPaletteColors.current
+    if (palette.poster) {
+        Surface(
+            modifier = modifier
+                .hardShadow(palette.shadow)
+                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
+            shape = RectangleShape,
+            color = palette.surface,
+            border = BorderStroke(2.dp, palette.ink),
+            tonalElevation = 0.dp,
+        ) {
+            content()
+        }
+        return
+    }
     val shape = MaterialTheme.shapes.medium
     Surface(
         modifier = modifier
@@ -54,10 +78,61 @@ fun GlassCard(
     }
 }
 
+/**
+ * Print-style hard shadow: a flat copy of [shape] offset down and right,
+ * drawn behind the content. Place it before any clip in the modifier chain.
+ */
+fun Modifier.hardShadow(
+    color: Color,
+    offset: Dp = 3.dp,
+    shape: Shape = RectangleShape,
+): Modifier = if (color == Color.Transparent) this else drawBehind {
+    val o = offset.toPx()
+    translate(o, o) {
+        drawOutline(shape.createOutline(size, layoutDirection, this), color)
+    }
+}
+
+/** A dashed rule, the poster palettes' answer to the hairline. */
+@Composable
+fun DashedRule(color: Color, modifier: Modifier = Modifier, thickness: Dp = 2.dp) {
+    Canvas(modifier.height(thickness)) {
+        val t = thickness.toPx()
+        drawLine(
+            color = color,
+            start = Offset(0f, size.height / 2),
+            end = Offset(size.width, size.height / 2),
+            strokeWidth = t,
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(t * 3, t * 2.5f)),
+        )
+    }
+}
+
 /** Small uppercase section header with a hairline, used across the app. */
 @Composable
 fun SectionLabel(text: String, modifier: Modifier = Modifier, accent: Color? = null) {
     val palette = LocalPaletteColors.current
+    if (palette.poster) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(8.dp)
+                    .background(palette.fillFor(accent ?: LocalAccents.current.mint))
+                    .border(1.5.dp, palette.ink)
+            )
+            Text(
+                text = text.uppercase(),
+                style = MaterialTheme.typography.titleSmall,
+                color = palette.onBackground,
+            )
+            DashedRule(palette.ink.copy(alpha = 0.4f), Modifier.weight(1f))
+        }
+        return
+    }
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -93,6 +168,36 @@ fun StatTile(
     footnote: String? = null,
 ) {
     val palette = LocalPaletteColors.current
+    if (palette.poster) {
+        Box(
+            modifier
+                .hardShadow(palette.shadow)
+                .background(palette.fillFor(accent))
+                .border(2.dp, palette.ink)
+                .padding(horizontal = 12.dp, vertical = 10.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(
+                    text = label.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = palette.onFill,
+                )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = palette.onFill,
+                )
+                if (footnote != null) {
+                    Text(
+                        text = footnote,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = palette.onFill.copy(alpha = 0.75f),
+                    )
+                }
+            }
+        }
+        return
+    }
     Box(
         modifier
             .clip(MaterialTheme.shapes.small)
@@ -138,6 +243,28 @@ fun Pill(
 ) {
     val palette = LocalPaletteColors.current
     val tint = accent ?: LocalAccents.current.lilac
+    if (palette.poster) {
+        Row(
+            modifier = modifier
+                // Opaque even when unselected, so backdrop stars and ruled
+                // lines never show through the label.
+                .background(if (selected) palette.fillFor(tint) else palette.background)
+                .border(2.dp, palette.ink)
+                .clickable(onClick = onClick)
+                .padding(horizontal = 11.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            if (leading != null) leading()
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                color = if (selected) palette.onFill else palette.onBackground,
+                textAlign = TextAlign.Center,
+            )
+        }
+        return
+    }
     val shape = RoundedCornerShape(50)
     Row(
         modifier = modifier

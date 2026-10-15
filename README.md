@@ -16,11 +16,13 @@ statistics built for lucid-dreaming practice.
 ## Screenshots
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Journal" width="250">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Journal, Aurora palette" width="200">
   &nbsp;
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Patterns" width="250">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_2.png" alt="Journal, Kosmos palette at dusk" width="200">
   &nbsp;
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Settings" width="250">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Patterns" width="200">
+  &nbsp;
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Settings" width="200">
 </p>
 
 ---
@@ -65,9 +67,14 @@ statistics built for lucid-dreaming practice.
 
 **Look**
 - Synthwave horizon with a drifting perspective grid, pastel sun and optional
-  CRT scanlines, drawn in Compose — no images, no bundled fonts.
+  CRT scanlines, drawn in Compose — no images.
 - Three pastel palettes (Aurora, Sunset, Cassette), each in night and day mode,
   plus follow-system.
+- **Kosmos** — a fourth, retrofuturist post-soviet palette: space-race poster
+  colours on paper (or dusk), square ink outlines with hard print shadows,
+  dream entries as tram-ticket stubs, a prefab-housing skyline whose windows
+  light up, the recall calendar as a lit facade and the lucid rate on a
+  cockpit gauge. Graphic vocabulary only — no political symbols.
 
 ## Build
 
@@ -102,7 +109,7 @@ The project is built to satisfy F-Droid's inclusion policy:
 | Reproducibility | release builds set `vcsInfo { include = false }`, which F-Droid's reproducible-builds page recommends when you can't guarantee the APK was built from a clean tree at the tagged commit; `dependenciesInfo { includeInApk = false }` additionally drops the opaque Google-signed dependency blob (not an F-Droid rule, but one less non-source artefact in the APK) |
 | No tracking | `AndroidManifest.xml` declares **no permissions at all** — the app cannot open a socket |
 | Store listing | `fastlane/metadata/android/en-US/` (title, descriptions, changelog) |
-| Assets | Launcher icon is a vector drawn in this repo; no bundled fonts, so no font licence travels with the app |
+| Assets | Launcher icon (Kosmos style, with a monochrome layer for themed icons) is a vector drawn in this repo. One bundled font, Oswald (Kosmos headlines), under the SIL Open Font License 1.1 — a free licence F-Droid accepts; licence text in `LICENSE-OSWALD-OFL.txt` and in the font files' metadata |
 
 To submit it, open a merge request against
 [fdroiddata](https://gitlab.com/fdroid/fdroiddata) with a metadata file for your
@@ -124,8 +131,8 @@ app/src/main/java/io/github/agentgit007/noctuary/
 ├── stats/DreamStats.kt        pure-Kotlin statistics engine (no Android deps)
 ├── backup/BackupFormat.kt     JSON/Markdown/CSV export, lenient JSON import
 └── ui/
-    ├── theme/                 three palettes × night/day, typography, shapes
-    ├── components/            retro backdrop, glass cards, pills, tiles
+    ├── theme/                 four palettes × night/day, typography, shapes
+    ├── components/            synthwave + Kosmos backdrops, cards, pills, tiles
     ├── journal/               list, search, filters
     ├── editor/                entry editor with the date picker
     ├── stats/                 charts (Compose Canvas) + statistics screen
@@ -143,3 +150,9 @@ GNU General Public License v3.0 or later. See [LICENSE](LICENSE).
 
 Midnight, the app that inspired this one, is also GPL-3.0 — no code was copied
 from it; the lineage is in the idea and the restraint.
+
+The Oswald font files in `app/src/main/res/font/` are © The Oswald Project
+Authors ([googlefonts/OswaldFont](https://github.com/googlefonts/OswaldFont)),
+licensed under the SIL Open Font License 1.1 — see
+[LICENSE-OSWALD-OFL.txt](LICENSE-OSWALD-OFL.txt). They are unmodified static
+instances (Medium, SemiBold) from that repository.
